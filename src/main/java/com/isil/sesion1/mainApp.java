@@ -4,31 +4,37 @@ import java.sql.*;
 
 public class mainApp {
     public static void main(String[] args) throws Exception{
-
+        //1. Cargar driver
         Class.forName("com.mysql.cj.jdbc.Driver");
 
+        //2. Crear conexión
         Connection con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/test",
                 "root",
                 "angel2104");
-        Statement stmt = con.createStatement();
 
-        int resultUpdate = stmt.executeUpdate("update Users set phone='555444666' where name='Messi'");
+        // 3. Crear statement
+        // 3.1 Statement mantenimiento
+        Statement stCreate = con.createStatement();
+        int filasAfectadas=
+                stCreate.executeUpdate("UPDATE USERS SET NAME='JUAN' WHERE IDUSER=1");
+        System.out.println("Filas afectadas: " + filasAfectadas);
 
-        //if(result.getString("name").equals("Ronaldo"){
-        //      System.out.println(result.getString("idUser"));
-        //      System.out.println(result.getString("name"));
-        //      System.out.println(result.getString("phone"));
-        //      System.out.println(result.getString("city"));
-        // }
+        // 3.2 Statement consulta
+        PreparedStatement preparedStatement =
+                con.prepareStatement("select * from Users where idUser=?");
+        preparedStatement.setInt(1, 1);
 
-        ResultSet result = stmt.executeQuery("select * from Users");
+        // 4. Ejecutar query
+        ResultSet resultSet2 = preparedStatement.executeQuery();
 
-        while(result.next()){
-            System.out.println(result.getString("idUser"));
-            System.out.println(result.getString("name"));
-            System.out.println(result.getString("phone"));
-            System.out.println(result.getString("city"));
+        // 5. Recorrer resultados
+        while(resultSet2.next()) {
+            System.out.println(resultSet2.getString("name") + "\n"+
+                    resultSet2.getString("phone") + "\n"+
+                    resultSet2.getString("city"));
         }
+        // 6. Cerrar conexion
+        con.close();
     }
 }
